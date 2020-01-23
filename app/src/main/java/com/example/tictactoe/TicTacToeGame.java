@@ -92,15 +92,26 @@ public class TicTacToeGame {
         return isFinished;
     }
 
-    CellStatus[][] getGrid() {
+    private CellStatus[][] getGrid() {
         return gameGrid;
+    }
+
+    String cellStatusToText(CellStatus cell) {
+        switch (cell) {
+            case NOUGHT:
+                return "O";
+            case CROSS:
+                return "X";
+            default:
+                return ".";
+        }
     }
 
     public void printGridPretty() {
         CellStatus[][] currentGrid = getGrid();
         for (CellStatus[] row : currentGrid) {
             for (CellStatus cell : row) {
-                System.out.print(cell == CellStatus.CROSS ? "X" : "O");
+                System.out.print(cellStatusToText(cell));
             }
             System.out.println();
         }

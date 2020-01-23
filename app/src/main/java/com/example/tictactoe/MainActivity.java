@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.gridlayout.widget.GridLayout;
@@ -28,16 +29,7 @@ public class MainActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     TicTacToeGame.CellStatus cellStatus = handleClick(horizontalRowIndex, verticalRowIndex);
                     Log.d(TAG, "User clicked on cell, coordinates: " + horizontalRowIndex + " " + verticalRowIndex);
-                    String cellText = "";
-                    switch (cellStatus) {
-                        case CROSS:
-                            cellText = "X";
-                            break;
-                        case NOUGHT:
-                            cellText = "O";
-                            break;
-                    }
-                    button.setText(cellText);
+                    button.setText(game.cellStatusToText(cellStatus));
                 }
             });
         }
@@ -45,6 +37,11 @@ public class MainActivity extends AppCompatActivity {
 
     private TicTacToeGame.CellStatus handleClick(int horizontalRowIndex, int verticalRowIndex) {
         game.tryMarkCell(horizontalRowIndex, verticalRowIndex);
+        if (game.getIsFinished()) {
+            TextView textView = findViewById(R.id.top_text);
+            int winnerPlayerNumber = game.getWinnerPlayerNumber() + 1;
+            textView.setText("Player " + winnerPlayerNumber + " won");  // TODO: refactor
+        }
         return game.getCellStatus(horizontalRowIndex, verticalRowIndex);
     }
 }
