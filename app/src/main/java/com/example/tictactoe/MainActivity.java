@@ -12,11 +12,15 @@ import androidx.gridlayout.widget.GridLayout;
 public class MainActivity extends AppCompatActivity {
     private TicTacToeGame game = new TicTacToeGame();
     private static final String TAG = MainActivity.class.getSimpleName();
+    private Button newGameButton;
+    private TextView topTextView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        newGameButton = findViewById(R.id.new_game_button);
 
         GridLayout grid = findViewById(R.id.tic_tac_toe_grid_layout);
         int childCount = grid.getChildCount();
@@ -38,10 +42,25 @@ public class MainActivity extends AppCompatActivity {
     private TicTacToeGame.CellStatus handleClick(int horizontalRowIndex, int verticalRowIndex) {
         game.tryMarkCell(horizontalRowIndex, verticalRowIndex);
         if (game.getIsFinished()) {
-            TextView textView = findViewById(R.id.top_text);
+            topTextView = findViewById(R.id.top_text);
             int winnerPlayerNumber = game.getWinnerPlayerNumber() + 1;
-            textView.setText("Player " + winnerPlayerNumber + " won");  // TODO: refactor
+            topTextView.setText("Player " + winnerPlayerNumber + " won");  // TODO: refactor
+            newGameButton.setVisibility(View.VISIBLE);
         }
         return game.getCellStatus(horizontalRowIndex, verticalRowIndex);
+    }
+
+    public void startNewGame(View view) {
+        topTextView.setText(R.string.top_text);
+
+        GridLayout grid = findViewById(R.id.tic_tac_toe_grid_layout);
+        int childCount = grid.getChildCount();
+
+        for (int i = 0; i < childCount; i++) {
+            final Button button = (Button) grid.getChildAt(i);
+            button.setText("");
+        }
+
+        game = new TicTacToeGame();
     }
 }
