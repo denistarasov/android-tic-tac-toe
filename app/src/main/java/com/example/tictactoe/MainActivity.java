@@ -4,9 +4,11 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatDelegate;
 import androidx.gridlayout.widget.GridLayout;
 
 public class MainActivity extends AppCompatActivity {
@@ -15,10 +17,23 @@ public class MainActivity extends AppCompatActivity {
     private Button newGameButton;
     private TextView topTextView;
 
+    private int cellStatusToVectorDrawable(TicTacToeGame.CellStatus cellStatus) {
+        switch (cellStatus) {
+            case CROSS:
+                return R.drawable.cross;
+            case NOUGHT:
+                return R.drawable.nought;
+            default:
+                return R.drawable.empty;
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         newGameButton = findViewById(R.id.new_game_button);
 
@@ -26,14 +41,14 @@ public class MainActivity extends AppCompatActivity {
         int childCount = grid.getChildCount();
 
         for (int i = 0; i < childCount; i++) {
-            final Button button = (Button) grid.getChildAt(i);
+            final ImageButton cellButton = (ImageButton) grid.getChildAt(i);
             final int verticalRowIndex = i % 3;
             final int horizontalRowIndex = i / 3;
-            button.setOnClickListener(new View.OnClickListener() {
+            cellButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
                     TicTacToeGame.CellStatus cellStatus = handleClick(horizontalRowIndex, verticalRowIndex);
                     Log.d(TAG, "User clicked on cell, coordinates: " + horizontalRowIndex + " " + verticalRowIndex);
-                    button.setText(game.cellStatusToText(cellStatus));
+                    cellButton.setImageResource(cellStatusToVectorDrawable(cellStatus));
                 }
             });
         }
@@ -56,9 +71,10 @@ public class MainActivity extends AppCompatActivity {
         GridLayout grid = findViewById(R.id.tic_tac_toe_grid_layout);
         int childCount = grid.getChildCount();
 
+        TicTacToeGame.CellStatus defaultStatus = TicTacToeGame.CellStatus.EMPTY;
         for (int i = 0; i < childCount; i++) {
-            final Button button = (Button) grid.getChildAt(i);
-            button.setText("");
+            final ImageButton imageButton = (ImageButton) grid.getChildAt(i);
+            imageButton.setImageResource(cellStatusToVectorDrawable(defaultStatus));
         }
 
         game = new TicTacToeGame();
