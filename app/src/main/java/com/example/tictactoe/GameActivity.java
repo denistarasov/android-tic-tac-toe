@@ -11,9 +11,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.gridlayout.widget.GridLayout;
 
-public class MainActivity extends AppCompatActivity {
+public class GameActivity extends AppCompatActivity {
     private TicTacToeGame game = new TicTacToeGame();
-    private static final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = GameActivity.class.getSimpleName();
     private Button newGameButton;
     private TextView topTextView;
 
