@@ -2,4 +2,6 @@
     <string name="app_name">Tic Tac Toe</string>
     <string name="top_text">Tic Tac Toe</string>
     <string name="new_game_button_text">New game</string>
+    <string name="two_players_button_text">2 Players</string>
+    <string name="vs_ai_button_text">Player vs AI</string>
 </resources>

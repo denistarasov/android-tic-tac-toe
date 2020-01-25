@@ -1,5 +1,6 @@
 package com.example.tictactoe;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -11,11 +12,15 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.app.AppCompatDelegate;
 import androidx.gridlayout.widget.GridLayout;
 
+import java.util.Queue;
+
 public class GameActivity extends AppCompatActivity {
-    private TicTacToeGame game = new TicTacToeGame();
+    GridLayout gameField;
     private static final String TAG = GameActivity.class.getSimpleName();
     private Button newGameButton;
     private TextView topTextView;
+    private TicTacToeGame game;
+    private TicTacToeGame.GameMode gameMode;
 
     private int cellStatusToVectorDrawable(TicTacToeGame.CellStatus cellStatus) {
         switch (cellStatus) {
@@ -28,41 +33,79 @@ public class GameActivity extends AppCompatActivity {
         }
     }
 
+    private void updateGameCell(TicTacToeGame.GameMove move) {
+        int horizontalRowIndex = move.horizontalRowIndex;
+        int verticalRowIndex = move.verticalRowIndex;
+        ImageButton cell = (ImageButton) gameField.getChildAt(horizontalRowIndex * 3 + verticalRowIndex);
+        cell.setImageResource(cellStatusToVectorDrawable(move.cellStatus));
+    }
+
+    private void updateGameField() {
+        Queue<TicTacToeGame.GameMove> history = game.getHistory();
+        Log.d(TAG, "Queue size is " + history.size());
+        TicTacToeGame.GameMove userMove = history.poll();
+        if (userMove != null) {
+            Log.d(TAG, "History queue head is " + userMove.horizontalRowIndex + " " + userMove.verticalRowIndex + ", status: " + userMove.cellStatus);
+            updateGameCell(userMove);
+        }
+
+        if (gameMode == TicTacToeGame.GameMode.VS_AI) {
+            TicTacToeGame.GameMove aiMove = history.poll();
+            if (aiMove != null) {
+                Log.d(TAG, "History queue head is " + aiMove.horizontalRowIndex + " " + aiMove.verticalRowIndex + ", status: " + aiMove.cellStatus);
+                updateGameCell(aiMove);
+            }
+        }
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game);
 
+        Intent intent = getIntent();
+        gameMode = (TicTacToeGame.GameMode) intent.getSerializableExtra(MainActivity.EXTRA_MESSAGE);
+        game = new TicTacToeGame(gameMode);
+
         AppCompatDelegate.setCompatVectorFromResourcesEnabled(true);
 
         newGameButton = findViewById(R.id.new_game_button);
+        topTextView = findViewById(R.id.top_text);
 
-        GridLayout grid = findViewById(R.id.tic_tac_toe_grid_layout);
-        int childCount = grid.getChildCount();
+        gameField = findViewById(R.id.tic_tac_toe_grid_layout);
+        int childCount = gameField.getChildCount();
 
         for (int i = 0; i < childCount; i++) {
-            final ImageButton cellButton = (ImageButton) grid.getChildAt(i);
+            final ImageButton cellButton = (ImageButton) gameField.getChildAt(i);
             final int verticalRowIndex = i % 3;
             final int horizontalRowIndex = i / 3;
             cellButton.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View view) {
-                    TicTacToeGame.CellStatus cellStatus = handleClick(horizontalRowIndex, verticalRowIndex);
+                    handleClick(horizontalRowIndex, verticalRowIndex);
                     Log.d(TAG, "User clicked on cell, coordinates: " + horizontalRowIndex + " " + verticalRowIndex);
-                    cellButton.setImageResource(cellStatusToVectorDrawable(cellStatus));
+                    updateGameField();
                 }
             });
         }
     }
 
-    private TicTacToeGame.CellStatus handleClick(int horizontalRowIndex, int verticalRowIndex) {
+    private void handleClick(int horizontalRowIndex, int verticalRowIndex) {
         game.tryMarkCell(horizontalRowIndex, verticalRowIndex);
         if (game.getIsFinished()) {
-            topTextView = findViewById(R.id.top_text);
-            int winnerPlayerNumber = game.getWinnerPlayerNumber() + 1;
-            topTextView.setText("Player " + winnerPlayerNumber + " won");  // TODO: refactor
+            int winnerPlayerNumber = game.getWinnerPlayerNumber();
+            switch (winnerPlayerNumber) {
+                case -1:
+                    topTextView.setText("It's a tie!");
+                    break;
+                case 0:
+                    topTextView.setText("Crosses win");
+                    break;
+                case 1:
+                    topTextView.setText("Noughts win");
+                    break;
+            }
             newGameButton.setVisibility(View.VISIBLE);
         }
-        return game.getCellStatus(horizontalRowIndex, verticalRowIndex);
     }
 
     public void startNewGame(View view) {
@@ -77,6 +120,6 @@ public class GameActivity extends AppCompatActivity {
             imageButton.setImageResource(cellStatusToVectorDrawable(defaultStatus));
         }
 
-        game = new TicTacToeGame();
+        game = new TicTacToeGame(gameMode);
     }
 }

@@ -1,6 +1,12 @@
 package com.example.tictactoe;
 
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.Random;
+
 public class TicTacToeGame {
+    private GameMode gameMode;
+
     private class GridRow {
         int[] playersMarks;
 
@@ -8,6 +14,8 @@ public class TicTacToeGame {
             playersMarks = new int[NUMBER_OF_PLAYERS];
         }
     }
+
+    private Random randomGenerator;
 
     private CellStatus[][] gameGrid;
 
@@ -21,10 +29,16 @@ public class TicTacToeGame {
     private GridRow secondaryDiagonal;
     private int winnerPlayerNumber;
     private boolean isFinished;
+    private Queue<GameMove> gameHistory;
     private int currentPlayerNumber;
     private int cellsMarkedNumber;
 
     TicTacToeGame() {
+        this(GameMode.TWO_PLAYERS);
+    }
+
+    TicTacToeGame(GameMode gameMode) {
+        this.gameMode = gameMode;
         isFinished = false;
         gameGrid = new CellStatus[GRID_SIZE][GRID_SIZE];
         horizontalRows = new GridRow[GRID_SIZE];
@@ -41,9 +55,24 @@ public class TicTacToeGame {
         currentPlayerNumber = 0;
         winnerPlayerNumber = -2;
         cellsMarkedNumber = 0;
+        randomGenerator = new Random();
+        gameHistory = new LinkedList<>();
+    }
+
+    private void markCellByAi() {
+        boolean wasCellMarked = false;
+        while (!wasCellMarked && !isFinished) {
+            int randomHorizontalRowIndex = randomGenerator.nextInt(3);
+            int randomVerticalRowIndex = randomGenerator.nextInt(3);
+            wasCellMarked = tryMarkCell(randomHorizontalRowIndex, randomVerticalRowIndex, true);
+        }
     }
 
     boolean tryMarkCell(int horizontalRowIndex, int verticalRowIndex) {
+        return tryMarkCell(horizontalRowIndex, verticalRowIndex, false);
+    }
+
+    private boolean tryMarkCell(int horizontalRowIndex, int verticalRowIndex, boolean isAiTurn) {
         if (gameGrid[horizontalRowIndex][verticalRowIndex] != CellStatus.EMPTY || isFinished) {
             return false;
         }
@@ -58,15 +87,29 @@ public class TicTacToeGame {
         if (horizontalRowIndex == GRID_SIZE - verticalRowIndex - 1) {
             ++secondaryDiagonal.playersMarks[currentPlayerNumber];
         }
+        gameHistory.add(new GameMove(
+                horizontalRowIndex,
+                verticalRowIndex,
+                gameGrid[horizontalRowIndex][verticalRowIndex]
+        ));
 
         updateStatus(horizontalRowIndex, verticalRowIndex);
         currentPlayerNumber = (currentPlayerNumber + 1) % NUMBER_OF_PLAYERS;
 
+        if (gameMode == GameMode.VS_AI && !isAiTurn) {
+            markCellByAi();
+        }
+
         return true;
     }
 
-    CellStatus getCellStatus(int horizontalRowIndex, int verticalRowIndex) {
-        return gameGrid[horizontalRowIndex][verticalRowIndex];
+    Queue<GameMove> getHistory() {
+        return gameHistory;
+    }
+
+    public enum GameMode {
+        TWO_PLAYERS,
+        VS_AI
     }
 
     private void updateStatus(int horizontalRowNumber, int verticalRowNumber) {
@@ -90,6 +133,18 @@ public class TicTacToeGame {
 
     boolean getIsFinished() {
         return isFinished;
+    }
+
+    class GameMove {
+        int horizontalRowIndex;
+        int verticalRowIndex;
+        CellStatus cellStatus;
+
+        GameMove(int horizontalRowIndex, int verticalRowIndex, CellStatus cellStatus) {
+            this.horizontalRowIndex = horizontalRowIndex;
+            this.verticalRowIndex = verticalRowIndex;
+            this.cellStatus = cellStatus;
+        }
     }
 
     private CellStatus[][] getGrid() {
