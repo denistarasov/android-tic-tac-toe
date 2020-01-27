@@ -4,4 +4,16 @@
     <string name="new_game_button_text">New game</string>
     <string name="two_players_button_text">2 Players</string>
     <string name="vs_ai_button_text">Player vs AI</string>
+    <string name="noughts_win_message">Noughts win</string>
+    <string name="crosses_win_message">Crosses win</string>
+    <string name="tie_message">It\'s a tie!</string>
+    <string name="cell_00_description">First row, first column</string>
+    <string name="cell_01_description">First row, second column</string>
+    <string name="cell_02_description">First row, third column</string>
+    <string name="cell_10_description">Second row, first column</string>
+    <string name="cell_11_description">Second row, second column</string>
+    <string name="cell_12_description">Second row, third column</string>
+    <string name="cell_20_description">Third row, first column</string>
+    <string name="cell_21_description">Third row, second column</string>
+    <string name="cell_22_description">Third row, third column</string>
 </resources>

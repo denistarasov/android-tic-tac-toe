@@ -5,7 +5,7 @@ import java.util.Queue;
 import java.util.Random;
 
 public class TicTacToeGame {
-    private GameMode gameMode;
+    private final GameMode gameMode;
 
     private class GridRow {
         int[] playersMarks;
@@ -15,16 +15,14 @@ public class TicTacToeGame {
         }
     }
 
-    private Random randomGenerator;
-
+    private final Random randomGenerator;
     private CellStatus[][] gameGrid;
-
     private static final int GRID_SIZE = 3;
     private static final int MARKS_NEEDED_TO_WIN = GRID_SIZE;
     private static final int NUMBER_OF_PLAYERS = 2;
     private static final int NUMBER_OF_CELLS = GRID_SIZE * GRID_SIZE;
-    private GridRow[] horizontalRows;
-    private GridRow[] verticalRows;
+    private final GridRow[] horizontalRows;
+    private final GridRow[] verticalRows;
     private GridRow primaryDiagonal;
     private GridRow secondaryDiagonal;
     private int winnerPlayerNumber;
@@ -135,23 +133,7 @@ public class TicTacToeGame {
         return isFinished;
     }
 
-    class GameMove {
-        int horizontalRowIndex;
-        int verticalRowIndex;
-        CellStatus cellStatus;
-
-        GameMove(int horizontalRowIndex, int verticalRowIndex, CellStatus cellStatus) {
-            this.horizontalRowIndex = horizontalRowIndex;
-            this.verticalRowIndex = verticalRowIndex;
-            this.cellStatus = cellStatus;
-        }
-    }
-
-    private CellStatus[][] getGrid() {
-        return gameGrid;
-    }
-
-    String cellStatusToText(CellStatus cell) {
+    private String cellStatusToText(CellStatus cell) {
         switch (cell) {
             case NOUGHT:
                 return "O";
@@ -159,6 +141,22 @@ public class TicTacToeGame {
                 return "X";
             default:
                 return ".";
+        }
+    }
+
+    private CellStatus[][] getGrid() {
+        return gameGrid;
+    }
+
+    class GameMove {
+        final int horizontalRowIndex;
+        final int verticalRowIndex;
+        final CellStatus cellStatus;
+
+        GameMove(int horizontalRowIndex, int verticalRowIndex, CellStatus cellStatus) {
+            this.horizontalRowIndex = horizontalRowIndex;
+            this.verticalRowIndex = verticalRowIndex;
+            this.cellStatus = cellStatus;
         }
     }
 

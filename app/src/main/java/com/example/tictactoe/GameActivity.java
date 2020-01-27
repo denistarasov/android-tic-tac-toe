@@ -15,7 +15,7 @@ import androidx.gridlayout.widget.GridLayout;
 import java.util.Queue;
 
 public class GameActivity extends AppCompatActivity {
-    GridLayout gameField;
+    private GridLayout gameField;
     private static final String TAG = GameActivity.class.getSimpleName();
     private Button newGameButton;
     private TextView topTextView;
@@ -95,13 +95,13 @@ public class GameActivity extends AppCompatActivity {
             int winnerPlayerNumber = game.getWinnerPlayerNumber();
             switch (winnerPlayerNumber) {
                 case -1:
-                    topTextView.setText("It's a tie!");
+                    topTextView.setText(getResources().getString(R.string.tie_message));
                     break;
                 case 0:
-                    topTextView.setText("Crosses win");
+                    topTextView.setText(getResources().getString(R.string.crosses_win_message));
                     break;
                 case 1:
-                    topTextView.setText("Noughts win");
+                    topTextView.setText(getResources().getString(R.string.noughts_win_message));
                     break;
             }
             newGameButton.setVisibility(View.VISIBLE);
